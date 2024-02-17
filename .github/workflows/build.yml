@@ -27,7 +27,7 @@ jobs:
       - name: install elf2uf2
         run: |
           sudo apt-get update
-          sudo apt-get isntall libudev-dev
+          sudo apt-get install libudev-dev
           cargo install elf2uf2-rs
 
       - name: create uf2 image
