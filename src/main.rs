@@ -37,9 +37,10 @@ use crate::scheduler::Scheduler;
 mod encoder;
 use crate::encoder::Encoder;
 
-static ENCODER1: Encoder<gpio::bank0::Gpio2, gpio::bank0::Gpio3, gpio::PullUp> = Encoder::none();
-static ENCODER2: Encoder<gpio::bank0::Gpio4, gpio::bank0::Gpio5, gpio::PullUp> = Encoder::none();
-static ENCODER3: Encoder<gpio::bank0::Gpio6, gpio::bank0::Gpio7, gpio::PullUp> = Encoder::none();
+static ENCODER1: Encoder<gpio::bank0::Gpio16, gpio::bank0::Gpio17, gpio::PullUp> = Encoder::none();
+static ENCODER2: Encoder<gpio::bank0::Gpio18, gpio::bank0::Gpio19, gpio::PullUp> = Encoder::none();
+static ENCODER3: Encoder<gpio::bank0::Gpio20, gpio::bank0::Gpio21, gpio::PullUp> = Encoder::none();
+static ENCODER4: Encoder<gpio::bank0::Gpio22, gpio::bank0::Gpio26, gpio::PullUp> = Encoder::none();
 
 #[entry]
 fn main() -> ! {
@@ -111,9 +112,10 @@ fn main() -> ! {
     }
     led_pin.set_low().unwrap();
 
-    ENCODER1.configure(pins.gpio2, pins.gpio3);
-    ENCODER2.configure(pins.gpio4, pins.gpio5);
-    ENCODER3.configure(pins.gpio6, pins.gpio7);
+    ENCODER1.configure(pins.gpio16, pins.gpio17);
+    ENCODER2.configure(pins.gpio18, pins.gpio19);
+    ENCODER3.configure(pins.gpio20, pins.gpio21);
+    ENCODER4.configure(pins.gpio22, pins.gpio26);
 
     let mut scheduler = Scheduler::new(10_000, &timer);
     loop {
@@ -151,6 +153,7 @@ fn IO_IRQ_BANK0() {
     ENCODER1.interrupt();
     ENCODER2.interrupt();
     ENCODER3.interrupt();
+    ENCODER4.interrupt();
 }
 
 // End of file
