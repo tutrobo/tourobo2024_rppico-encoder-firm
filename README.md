@@ -1,5 +1,11 @@
 # rppico-encoder-node
 This firmware transmit cobs encoder data via usb-cdc.
+## burn firmware!
+1. download __rppico-encoder-node.uf2__ from [latest release](https://github.com/NeyagawaRobocons/rppico-encoder-firm/releases/latest)
+2. connect raspberry pi pico with boot mode
+3. mount raspberry pi pico mass storage
+4. copy rppico-encoder-node.uf2 to raspberry pi pico
+5. OK!
 ## setup enviroment
 install toolchain.
 ```
