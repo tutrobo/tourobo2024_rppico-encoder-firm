@@ -58,7 +58,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: target/thumbv6m-none-eabi/debug/rppico-encoder-firm
+          asset_path: target/thumbv6m-none-eabi/release/rppico-encoder-firm
           asset_name: rppico-encoder-firm.elf
           asset_content_type: firmware/binary
 
@@ -69,6 +69,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: target/thumbv6m-none-eabi/debug/rppico-encoder-firm.uf2
+          asset_path: target/thumbv6m-none-eabi/release/rppico-encoder-firm.uf2
           asset_name: rppico-encoder-firm.uf2
           asset_content_type: firmware/binary
