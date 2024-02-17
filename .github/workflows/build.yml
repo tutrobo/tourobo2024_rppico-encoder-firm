@@ -5,6 +5,10 @@ on:
     branches:
       - main
 
+permissions:
+  contents: write
+  packages: write
+
 env:
   CARGO_TERM_COLOR: always
 
@@ -68,4 +72,3 @@ jobs:
           asset_path: target/thumbv6m-none-eabi/debug/rppico-encoder-firm.uf2
           asset_name: rppico-encoder-firm.uf2
           asset_content_type: firmware/binary
-  
