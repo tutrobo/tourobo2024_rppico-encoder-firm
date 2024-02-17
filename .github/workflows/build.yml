@@ -24,7 +24,7 @@ jobs:
       - name: building
         run: cargo build --all --release
 
-      - run: cargo install elf2uf2-rs
+      - run: export PKG_CONFIG_PATH="/usr/lib/x86_64-linux-gnu/pkgconfig/" && cargo install elf2uf2-rs
 
       - name: create uf2 image
         run: elf2uf2-rs target/thumbv6m-none-eabi/debug/rppico-encoder-firm target/thumbv6m-none-eabi/debug/rppico-encoder-firm.uf2
