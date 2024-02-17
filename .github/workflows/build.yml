@@ -1,0 +1,66 @@
+name: build binary
+
+on:
+  push:
+    branches:
+      - main
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: stable
+          target: thumbv6m-none-eabi
+
+      - run: cargo install flip-link
+
+      - name: building
+        run: cargo build --all --release
+
+      - run: cargo install elf2uf2-rs
+
+      - name: create uf2 image
+        run: elf2uf2-rs target/thumbv6m-none-eabi/debug/rppico-encoder-firm target/thumbv6m-none-eabi/debug/rppico-encoder-firm.uf2
+
+      - name: Bump version and push tag
+        id: tag_version
+        uses: mathieudutour/github-tag-action@v6.1
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Create release
+        id: create_release
+        uses: ncipollo/release-action@v1
+        with:
+          tag: ${{ steps.tag_version.outputs.new_tag }}
+          name: Release ${{ steps.tag_version.outputs.new_tag }}
+          body: ${{ steps.tag_version.outputs.changelog }}
+
+      - name: Upload release asset
+        id: upload-release-elf
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: target/thumbv6m-none-eabi/debug/rppico-encoder-firm
+          asset_name: rppico-encoder-firm.elf
+          asset_content_type: firmware/binary
+
+      - name: Upload release asset
+        id: upload-release-uf2
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: target/thumbv6m-none-eabi/debug/rppico-encoder-firm.uf2
+          asset_name: rppico-encoder-firm.uf2
+          asset_content_type: firmware/binary
