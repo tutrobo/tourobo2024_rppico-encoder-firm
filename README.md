@@ -29,5 +29,5 @@ cargo run
 or
 ```
 cargo build --release
-elf2uf2rs target/thumbv6m-none-eabi/release/rppico-encoder-firm
+elf2uf2rs -d target/thumbv6m-none-eabi/release/rppico-encoder-firm
 ```
