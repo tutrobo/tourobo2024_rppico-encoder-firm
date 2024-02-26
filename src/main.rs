@@ -117,9 +117,11 @@ fn main() -> ! {
     ENCODER3.configure(pins.gpio20, pins.gpio21);
     ENCODER4.configure(pins.gpio22, pins.gpio26);
 
-    let mut scheduler = Scheduler::new(30_000, &timer);
+    let mut scheduler = Scheduler::new(10_000, &timer);
     loop {
         // A welcome message at the beginning
+        let mut read_buffer = [0u8; 64];
+        let _ = serial.read(&mut read_buffer);
         if scheduler.update() {
             let time = timer.get_counter().ticks();
             let counter = [ENCODER1.read(), ENCODER2.read(), ENCODER3.read()];
