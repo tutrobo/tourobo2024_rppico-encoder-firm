@@ -117,7 +117,7 @@ fn main() -> ! {
     ENCODER3.configure(pins.gpio20, pins.gpio21);
     ENCODER4.configure(pins.gpio22, pins.gpio26);
 
-    let mut scheduler = Scheduler::new(10_000, &timer);
+    let mut scheduler = Scheduler::new(30_000, &timer);
     loop {
         // A welcome message at the beginning
         let mut read_buffer = [0u8; 64];
