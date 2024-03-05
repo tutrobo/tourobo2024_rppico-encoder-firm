@@ -1,14 +1,14 @@
-pub struct BufferedCobs<const Buffer_Size: usize> {
-    buffer: [u8; Buffer_Size],
+pub struct BufferedCobs<const BUFFER_SIZE: usize> {
+    buffer: [u8; BUFFER_SIZE],
     buffer_index: usize,
     buffer_full: bool,
     data_ready: u16,
 }
 
-impl<const Buffer_Size: usize> BufferedCobs<Buffer_Size> {
-    pub fn new() -> BufferedCobs<Buffer_Size> {
-        BufferedCobs::<Buffer_Size> {
-            buffer: [0u8; Buffer_Size],
+impl<const BUFFER_SIZE: usize> BufferedCobs<BUFFER_SIZE> {
+    pub fn new() -> BufferedCobs<BUFFER_SIZE> {
+        BufferedCobs::<BUFFER_SIZE> {
+            buffer: [0u8; BUFFER_SIZE],
             buffer_index: 0,
             buffer_full: false,
             data_ready: 0,
@@ -20,7 +20,7 @@ impl<const Buffer_Size: usize> BufferedCobs<Buffer_Size> {
         }
         self.buffer[self.buffer_index] = byte;
         self.buffer_index += 1;
-        if self.buffer_index == Buffer_Size {
+        if self.buffer_index == BUFFER_SIZE {
             self.buffer_full = true;
         }
         if byte == 0 {
@@ -35,7 +35,7 @@ impl<const Buffer_Size: usize> BufferedCobs<Buffer_Size> {
         Ok(())
     }
     fn slide(&mut self, index: usize) {
-        for i in 0..(Buffer_Size - index) {
+        for i in 0..(BUFFER_SIZE - index) {
             self.buffer[i] = self.buffer[i + index];
         }
         self.buffer_index -= index;

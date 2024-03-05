@@ -7,12 +7,12 @@
 
 use bsp::{
     entry,
-    hal::gpio::{FunctionSioOutput, Pin},
+    hal::gpio::{FunctionSioOutput, Pin, PullUp},
     pac,
 };
 use defmt::*;
 use defmt_rtt as _;
-use embedded_hal::digital::v2::OutputPin;
+use embedded_hal::digital::v2::{InputPin, OutputPin};
 use panic_probe as _;
 
 // Provide an alias for our BSP so we can switch targets quickly.
@@ -117,7 +117,22 @@ fn main() -> ! {
     ENCODER3.configure(pins.gpio20, pins.gpio21);
     ENCODER4.configure(pins.gpio22, pins.gpio26);
 
+    let switch0: Pin<_, gpio::FunctionSioInput, PullUp> = pins.gpio6.reconfigure();
+    let switch1: Pin<_, gpio::FunctionSioInput, PullUp> = pins.gpio7.reconfigure();
+    let switch2: Pin<_, gpio::FunctionSioInput, PullUp> = pins.gpio10.reconfigure();
+    let switch3: Pin<_, gpio::FunctionSioInput, PullUp> = pins.gpio11.reconfigure();
+
+    let mut switchs_state = [
+        switch0.is_low().unwrap(),
+        switch1.is_low().unwrap(),
+        switch2.is_low().unwrap(),
+        switch3.is_low().unwrap(),
+    ];
+
+    let mut switchs_state_prev = switchs_state;
+
     let mut scheduler = Scheduler::new(30_000, &timer);
+    let mut switchs_scheduler = Scheduler::new(500_000, &timer);
     loop {
         // A welcome message at the beginning
         let mut read_buffer = [0u8; 64];
@@ -141,6 +156,23 @@ fn main() -> ! {
                 send_data[13 + i * 4..17 + i * 4].copy_from_slice(&data[0..4]);
             }
             let _ = serial.write(&BufferedCobs::<0>::encode::<25, 27>(send_data));
+
+            switchs_state = [
+                switch0.is_low().unwrap(),
+                switch1.is_low().unwrap(),
+                switch2.is_low().unwrap(),
+                switch3.is_low().unwrap(),
+            ];
+            if switchs_state != switchs_state_prev || switchs_scheduler.update() {
+                let mut send_data: [u8; 2] = [0; 2];
+                send_data[0] = 0x02;
+                send_data[1] = (switchs_state[0] as u8)
+                    | (switchs_state[1] as u8) << 1
+                    | (switchs_state[2] as u8) << 2
+                    | (switchs_state[3] as u8) << 3;
+                let _ = serial.write(&BufferedCobs::<0>::encode::<2, 4>(send_data));
+                switchs_state_prev = switchs_state;
+            }
 
             // led_pin.toggle().unwrap();
         }
