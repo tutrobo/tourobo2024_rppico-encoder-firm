@@ -131,13 +131,13 @@ fn main() -> ! {
 
     let mut switchs_state_prev = switchs_state;
 
-    let mut scheduler = Scheduler::new(30_000, &timer);
+    let mut encoder_scheduler = Scheduler::new(30_000, &timer);
     let mut switchs_scheduler = Scheduler::new(500_000, &timer);
     loop {
         // A welcome message at the beginning
         let mut read_buffer = [0u8; 64];
         let _ = serial.read(&mut read_buffer);
-        if scheduler.update() {
+        if encoder_scheduler.update() {
             let time = timer.get_counter().ticks();
             let counter = [ENCODER1.read(), ENCODER2.read(), ENCODER3.read()];
             let speeds = [
