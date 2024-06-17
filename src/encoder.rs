@@ -25,7 +25,7 @@ where
     PinA: hal::gpio::ValidFunction<hal::gpio::FunctionSioInput>,
     PinB: hal::gpio::ValidFunction<hal::gpio::FunctionSioInput>,
 {
-    pub fn configure<'a, F1A, P1A, F1B, P1B>(
+    pub fn configure<F1A, P1A, F1B, P1B>(
         &self,
         pin_a: hal::gpio::Pin<PinA, F1A, P1A>,
         pin_b: hal::gpio::Pin<PinB, F1B, P1B>,
@@ -78,9 +78,9 @@ where
             self.last_speed_update_count.borrow(cs).replace(count);
         });
 
-        return Ok((Into::<i64>::into(count_delta) * 0x100 * 1_000_000 / delta)
+        Ok((Into::<i64>::into(count_delta) * 0x100 * 1_000_000 / delta)
             .try_into()
-            .unwrap());
+            .unwrap())
     }
     pub const fn none() -> Self {
         Encoder::<PinA, PinB, P> {
@@ -112,7 +112,7 @@ where
     PinA: hal::gpio::ValidFunction<hal::gpio::FunctionSioInput>,
     PinB: hal::gpio::ValidFunction<hal::gpio::FunctionSioInput>,
 {
-    pub fn new<'a, F1A, P1A, F1B, P1B>(
+    pub fn new<F1A, P1A, F1B, P1B>(
         pin_a: hal::gpio::Pin<PinA, F1A, P1A>,
         pin_b: hal::gpio::Pin<PinB, F1B, P1B>,
     ) -> Self

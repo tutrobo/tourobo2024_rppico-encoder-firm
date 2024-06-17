@@ -1,3 +1,4 @@
+#[allow(dead_code)]
 pub struct BufferedCobs<const BUFFER_SIZE: usize> {
     buffer: [u8; BUFFER_SIZE],
     buffer_index: usize,
@@ -5,6 +6,7 @@ pub struct BufferedCobs<const BUFFER_SIZE: usize> {
     data_ready: u16,
 }
 
+#[allow(dead_code)]
 impl<const BUFFER_SIZE: usize> BufferedCobs<BUFFER_SIZE> {
     pub fn new() -> BufferedCobs<BUFFER_SIZE> {
         BufferedCobs::<BUFFER_SIZE> {
