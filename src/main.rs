@@ -98,7 +98,7 @@ fn main() -> ! {
 
     // Create a USB device with a fake VID and PID
     let mut usb_dev = UsbDeviceBuilder::new(&usb_bus, UsbVidPid(0x16c0, 0x27dd))
-        .manufacturer("paripal_NWRC")
+        .manufacturer("paripal_TRC")
         .product("Serial port")
         .serial_number("01234567")
         .device_class(2) // from: https://www.usb.org/defined-class-codes
@@ -122,56 +122,62 @@ fn main() -> ! {
     let switch2: Pin<_, gpio::FunctionSioInput, PullUp> = pins.gpio10.reconfigure();
     let switch3: Pin<_, gpio::FunctionSioInput, PullUp> = pins.gpio11.reconfigure();
 
-    let mut switchs_state = [
+    let mut switches_state = [
         switch0.is_low().unwrap(),
         switch1.is_low().unwrap(),
         switch2.is_low().unwrap(),
         switch3.is_low().unwrap(),
     ];
 
-    let mut switchs_state_prev = switchs_state;
+    let mut switches_state_prev = switches_state;
 
     let mut encoder_scheduler = Scheduler::new(30_000, &timer);
-    let mut switchs_scheduler = Scheduler::new(500_000, &timer);
+    let mut switches_scheduler = Scheduler::new(500_000, &timer);
     loop {
         // A welcome message at the beginning
         let mut read_buffer = [0u8; 64];
         let _ = serial.read(&mut read_buffer);
         if encoder_scheduler.update() {
             let time = timer.get_counter().ticks();
-            let counter = [ENCODER1.read(), ENCODER2.read(), ENCODER3.read()];
+            let counts = [
+                ENCODER1.read(),
+                ENCODER2.read(),
+                ENCODER3.read(),
+                ENCODER4.read(),
+            ];
             let speeds = [
                 ENCODER1.read_speed(time),
                 ENCODER2.read_speed(time),
                 ENCODER3.read_speed(time),
+                ENCODER4.read_speed(time),
             ];
-            let mut send_data: [u8; 25] = [0; 25];
+            let mut send_data: [u8; 1 + 16 + 16] = [0; 1 + 16 + 16];
             send_data[0] = 0x01;
-            for (i, count) in counter.iter().enumerate() {
+            for (i, count) in counts.iter().enumerate() {
                 let data = count.unwrap().to_le_bytes();
-                send_data[1 + i * 4..5 + i * 4].copy_from_slice(&data[0..4]);
+                send_data[(1 + i * 4)..(5 + i * 4)].copy_from_slice(&data[0..4]);
             }
             for (i, speed) in speeds.iter().enumerate() {
                 let data = speed.unwrap().to_le_bytes();
-                send_data[13 + i * 4..17 + i * 4].copy_from_slice(&data[0..4]);
+                send_data[(17 + i * 4)..(21 + i * 4)].copy_from_slice(&data[0..4]);
             }
-            let _ = serial.write(&BufferedCobs::<0>::encode::<25, 27>(send_data));
+            let _ = serial.write(&BufferedCobs::<0>::encode::<33, 35>(send_data));
 
-            switchs_state = [
+            switches_state = [
                 switch0.is_low().unwrap(),
                 switch1.is_low().unwrap(),
                 switch2.is_low().unwrap(),
                 switch3.is_low().unwrap(),
             ];
-            if switchs_state != switchs_state_prev || switchs_scheduler.update() {
+            if switches_state != switches_state_prev || switches_scheduler.update() {
                 let mut send_data: [u8; 2] = [0; 2];
                 send_data[0] = 0x02;
-                send_data[1] = (switchs_state[0] as u8)
-                    | (switchs_state[1] as u8) << 1
-                    | (switchs_state[2] as u8) << 2
-                    | (switchs_state[3] as u8) << 3;
+                send_data[1] = (switches_state[0] as u8)
+                    | (switches_state[1] as u8) << 1
+                    | (switches_state[2] as u8) << 2
+                    | (switches_state[3] as u8) << 3;
                 let _ = serial.write(&BufferedCobs::<0>::encode::<2, 4>(send_data));
-                switchs_state_prev = switchs_state;
+                switches_state_prev = switches_state;
             }
 
             // led_pin.toggle().unwrap();
