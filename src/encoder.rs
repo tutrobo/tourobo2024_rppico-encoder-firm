@@ -63,12 +63,12 @@ where
         let count_delta = count
             - critical_section::with(|cs| {
                 let binding = self.last_speed_update_count.borrow(cs).borrow();
-                binding.deref().clone()
+                *binding
             });
         let delta: i64 = (now_us
             - critical_section::with(|cs| {
                 let binding = self.last_speed_update_time.borrow(cs).borrow();
-                binding.deref().clone()
+                *binding
             }))
         .try_into()
         .unwrap();
