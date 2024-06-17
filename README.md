@@ -1,3 +1,5 @@
+![Build Bynary](https://github.com/tutrobo/tourobo2024_rppico-encoder-firm/actions/workflows/build.yml/badge.svg?branch=feature-1)
+![CI Check](https://github.com/tutrobo/tourobo2024_rppico-encoder-firm/actions/workflows/ci_checks.yml/badge.svg?branch=feature-1)
 # rppico-encoder-node
 This firmware transmit cobs encoder data via usb-cdc.
 ## burn firmware!
