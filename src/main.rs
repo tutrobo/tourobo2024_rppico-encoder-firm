@@ -131,7 +131,7 @@ fn main() -> ! {
 
     let mut switches_state_prev = switches_state;
 
-    let mut encoder_scheduler = Scheduler::new(30_000, &timer);
+    let mut encoder_scheduler = Scheduler::new(10_000, &timer);
     let mut switches_scheduler = Scheduler::new(500_000, &timer);
     loop {
         // A welcome message at the beginning
